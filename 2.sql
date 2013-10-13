@@ -23,5 +23,5 @@ WITH RECURSIVE wholeNumbers(n) AS (
 )
 
 SELECT fib(n)
-FROM (SELECT * FROM wholeNumbers LIMIT 30) w
+FROM (SELECT * FROM wholeNumbers LIMIT 40) w
 WHERE fib(n) < 4000000;
