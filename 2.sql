@@ -16,32 +16,35 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION fibSum(int, int, int)
+CREATE OR REPLACE FUNCTION fibSum(int, int, int, int)
 RETURNS INTEGER AS $$
 DECLARE
   soFar ALIAS FOR $1;
   n ALIAS FOR $2;
   lastFib ALIAS FOR $3;
+  beforeLastFib ALIAS FOR $4;
+  thisFib INTEGER;
 BEGIN
+  SELECT (beforeLastFib + lastFib) INTO thisFib;
   RETURN CASE
-    WHEN n = 0 THEN 0
-    WHEN n = 1 THEN 1
-  ELSE
-    fib($1 - 1) + fib($1 - 2)
+  WHEN thisFib = 0 AND n = 0 THEN 1
+  WHEN thisFib = 1 AND n = 0 THEN 1
+  ELSE fibSum(soFar + thisFib, n - 1, lastFib, thisFib)
   END;
-END;
-$$ LANGUAGE plpgsql;
-
-CREATE OR REPLACE FUNCTION nextFib(int, int)
-RETURNS INTEGER AS $$
-BEGIN
-  RETURN $1 + $2
 END;
 $$ LANGUAGE plpgsql;
 
 CREATE OR REPLACE FUNCTION fibSum(int)
 RETURNS INTEGER AS $$
 BEGIN
-  RETURN fibSum(0, $1)
+  IF $1 <= 0 THEN
+    RETURN 0;
+  ELSIF $1 = 1 THEN
+    RETURN 1;
+  ELSE
+    RETURN fibSum(0, $1, 0, 1);
+  END IF;
 END;
 $$ LANGUAGE plpgsql;
+
+SELECT fibSum(10);
