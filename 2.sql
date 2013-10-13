@@ -16,24 +16,12 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION fibSum(int)
-RETURNS INTEGER AS $$
-BEGIN
-  IF $1 <= 0 THEN
-    RETURN 0;
-  ELSIF $1 = 1 THEN
-    RETURN 1;
-  ELSE
-    RETURN fibSum(0, $1, 0, 1);
-  END IF;
-END;
-$$ LANGUAGE plpgsql;
-
-WITH RECURSIVE fibSum(soFar, n, lastFib, beforeLastFib) AS (
-  SELECT CASE
-    WHEN lastFib = 0 AND beforeLastFib IS NULL THEN 0
-    WHEN lastFib = 1 AND beforeLastFib = 0 THEN 1
-    ELSE fibSum(soFar + lastFib, n - 1, lastFib, beforeLastFib + lastFib)
-  END
+WITH RECURSIVE wholeNumbers(n) AS (
+    VALUES (0)
+  UNION ALL
+    SELECT n+1 FROM wholeNumbers
 )
--- SELECT fibSum(10);
+
+SELECT fib(n)
+FROM (SELECT * FROM wholeNumbers LIMIT 30) w
+WHERE fib(n) < 4000000;
