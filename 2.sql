@@ -16,12 +16,32 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-WITH RECURSIVE wholeNumbers(n) AS (
-    VALUES (0)
-  UNION ALL
-    SELECT n+1 FROM wholeNumbers
-)
+CREATE OR REPLACE FUNCTION fibSum(int, int, int)
+RETURNS INTEGER AS $$
+DECLARE
+  soFar ALIAS FOR $1;
+  n ALIAS FOR $2;
+  lastFib ALIAS FOR $3;
+BEGIN
+  RETURN CASE
+    WHEN n = 0 THEN 0
+    WHEN n = 1 THEN 1
+  ELSE
+    fib($1 - 1) + fib($1 - 2)
+  END;
+END;
+$$ LANGUAGE plpgsql;
 
-SELECT sum(fib(n))
-FROM wholeNumbers
-WHERE fib(n) < 4000000;
+CREATE OR REPLACE FUNCTION nextFib(int, int)
+RETURNS INTEGER AS $$
+BEGIN
+  RETURN $1 + $2
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION fibSum(int)
+RETURNS INTEGER AS $$
+BEGIN
+  RETURN fibSum(0, $1)
+END;
+$$ LANGUAGE plpgsql;
