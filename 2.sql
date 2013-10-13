@@ -21,4 +21,7 @@ WITH RECURSIVE wholeNumbers(n) AS (
   UNION ALL
     SELECT n+1 FROM wholeNumbers
 )
-SELECT fib(n) FROM wholeNumbers LIMIT 10;
+
+SELECT sum(fib(n))
+FROM wholeNumbers
+WHERE fib(n) < 4000000;
